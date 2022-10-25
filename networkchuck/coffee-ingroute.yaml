@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nccoffee
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`coffee.orionmail.org`)
+      kind: Rule
+      services:
+        - name: nccoffee
+          port: 80
+  tls:
+    certResolver: cloudflare
