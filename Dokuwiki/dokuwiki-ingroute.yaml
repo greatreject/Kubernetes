@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dokuwiki
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`dokuwiki.orionmail.org`)
+      kind: Rule
+      services:
+        - name: dokuwiki
+          port: 8080
+  tls:
+    certResolver: cloudflare
