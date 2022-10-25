@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: guacamole
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`guacamole.orionmail.org`)
+      kind: Rule
+      services:
+        - name: guacamole
+          port: 8080
+  tls:
+    certResolver: cloudflare

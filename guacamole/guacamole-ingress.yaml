@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: Deny";
+      more_set_headers "X-Xss-Protection: 1; mode=block";
+      more_set_headers "X-Content-Type-Options: nosniff";
+  name: guacamole
+  namespace: default
+spec:
+  rules:
+    - host: guacamole.orionmail.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: guacamole
+              port:
+                number: 8080
+          path: /
+          pathType: ImplementationSpecific
