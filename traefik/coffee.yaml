@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chuckcoffee
+  labels:
+    app: chuckcoffee
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chuckcoffee
+  template:
+    metadata:
+      labels:
+        app: chuckcoffee
+    spec:
+      containers:
+      - name: chuckcoffee
+        image: thenetworkchuck/nccoffee:pourover
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chuckcoffee
+spec:
+  type: ClusterIP
+  selector:
+    app: chuckcoffee
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  #   protocol: TCP  # optional protocol
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: chuckcoffee
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`chuckcoffee.flakie.org`)
+      kind: Rule
+      services:
+        - name: chuckcoffee
+          port: 80
+  tls:
+    certResolver: cloudflare
