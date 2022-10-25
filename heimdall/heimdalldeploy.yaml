@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heimdall
+  labels:
+    app: heimdall
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: heimdall
+  template:
+    metadata:
+      labels:
+        app: heimdall
+    spec:
+      containers:
+      - name: 
+        image: linuxserver/heimdall
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: heimdall
+          mountPath: /config
+      volumes:
+      - name: heimdall
+        persistentVolumeClaim:
+          claimName: heimdall
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: heimdall
+spec:
+  type: NodePort
+  selector:
+    app: heimdall
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  #   protocol: TCP  # optional protocol
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: heimdall
+  labels:
+    app: heimdall
+spec:
+  storageClassName: 'nfs-client'
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
